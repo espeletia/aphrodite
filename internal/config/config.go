@@ -5,14 +5,16 @@ import (
 )
 
 type Config struct {
-	ServerConfig  ServerConfig
-	ServiceConfig ServiceConfig
+	ServerConfig    ServerConfig
+	ServiceConfig   ServiceConfig
+	WebSocketConfig WebSocketConfig
 }
 
 func LoadConfig() *Config {
 	config := &Config{
-		ServerConfig:  loadServerConfig(),
-		ServiceConfig: loadServiceConfig(),
+		ServerConfig:    loadServerConfig(),
+		ServiceConfig:   loadServiceConfig(),
+		WebSocketConfig: LoadWebSocketConfig(),
 	}
 	return config
 }
