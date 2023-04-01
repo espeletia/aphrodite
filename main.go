@@ -46,9 +46,10 @@ func serve(mux *mux.Router, config *config.Config) error {
 	shutdown := make(chan os.Signal, 1)
 	signal.Notify(shutdown, os.Interrupt, syscall.SIGTERM)
 
-	WSHandler := handlers.NewWsHandler()
+	WSHandler := handlers.NewWsHandler(config.WebSocketConfig)
 
 	mux.Handle("/ping", WSHandler.Ping())
+	mux.Handle("/echo", WSHandler.Echo())
 
 	corsMiddleware := cors.New(cors.Options{
 		AllowedOrigins:   []string{"*"},
