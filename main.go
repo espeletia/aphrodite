@@ -9,6 +9,7 @@ import (
 	"aphrodite/internal/config"
 	"aphrodite/internal/handlers"
 	"context"
+	"encoding/json"
 	"errors"
 	"log"
 	"net/http"
@@ -31,7 +32,8 @@ func main() {
 func run() error {
 	log.Println("Reding configuration...")
 	configuration := config.LoadConfig()
-
+	s, _ := json.MarshalIndent(configuration, "", "\t")
+	log.Println(string(s))
 	router := mux.NewRouter()
 
 	log.Println("Calling serve")
@@ -50,6 +52,10 @@ func serve(mux *mux.Router, config *config.Config) error {
 
 	mux.Handle("/ping", WSHandler.Ping())
 	mux.Handle("/echo", WSHandler.Echo())
+	mux.Handle("/conn/{id}", WSHandler.HandleConnections())
+	mux.Handle("/ws", WSHandler.GetConnections())
+	mux.Handle("/Dio", WSHandler.DIOEndpoint())
+	mux.Handle("/Yev", WSHandler.YEVEndpoint())
 
 	corsMiddleware := cors.New(cors.Options{
 		AllowedOrigins:   []string{"*"},
