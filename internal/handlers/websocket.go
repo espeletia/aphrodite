@@ -2,6 +2,8 @@ package handlers
 
 import (
 	"aphrodite/internal/config"
+	"aphrodite/internal/domain"
+	"encoding/json"
 	"fmt"
 	"log"
 	"net/http"
@@ -13,14 +15,13 @@ import (
 
 type WSHandler struct {
 	Upgrader websocket.Upgrader
-	Dio         string
-	Yev         string
+	Dio      string
+	Yev      string
 }
 
 var (
 	Connections map[string]*websocket.Conn
 	Mutex       sync.Mutex
-
 )
 
 func NewWsHandler(configuration config.WebSocketConfig) *WSHandler {
@@ -128,7 +129,20 @@ func (ws WSHandler) YEVEndpoint() http.HandlerFunc {
 			w.WriteHeader(http.StatusNotFound)
 			return
 		}
-		Connections[ws.Dio].WriteMessage(websocket.TextMessage, []byte("ping"))
+		message := domain.Message{
+			Type: "cmd",
+			Body: domain.Body{
+				Type:  "digitalWrite",
+				Mode:  "",
+				Pin:   "D2",
+				Value: "HIGH",
+			},
+		}
+		bytes, err := json.Marshal(message)
+		if err != nil {
+			log.Println("Error: ", err)
+		}
+		Connections[ws.Dio].WriteMessage(websocket.TextMessage, bytes)
 
 		w.WriteHeader(http.StatusOK)
 	}
