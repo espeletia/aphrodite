@@ -41,6 +41,7 @@ func (ws WSHandler) Ping() http.HandlerFunc {
 			client.WriteMessage(websocket.TextMessage, []byte("ping"))
 		}
 		w.Write([]byte("pong"))
+		log.Println("Pong")
 	}
 }
 
